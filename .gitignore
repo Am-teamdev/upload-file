@@ -1,6 +1,6 @@
 ### Python template
 # Byte-compiled / optimized / DLL files
-upload/
+uploads/
 __pycache__/
 *.py[cod]
 *$py.class
