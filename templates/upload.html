@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Multi File Upload with Progress</title>
+</head>
+<body>
+
+    <h2>Upload Files</h2>
+
+    <!-- انتخاب چند فایل -->
+    <input type="file" id="fileInput" multiple>
+
+    <!-- دکمه آپلود -->
+    <button onclick="uploadFile()">Upload</button>
+
+    <br><br>
+
+    <!-- Progress Bar -->
+    <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
+
+    <!-- درصد -->
+    <p id="percentText">0%</p>
+
+    <!-- مقدار آپلود شده -->
+    <p id="sizeText">Uploaded: 0 MB / 0 MB</p>
+
+    <!-- وضعیت -->
+    <p id="status"></p>
+
+    <script>
+        function uploadFile() {
+
+            let files = document.getElementById("fileInput").files;
+
+            if (files.length === 0) {
+                alert("Please select files first!");
+                return;
+            }
+
+            let formData = new FormData();
+
+            // اضافه کردن همه فایل‌ها
+            for (let i = 0; i < files.length; i++) {
+                formData.append("files", files[i]);
+            }
+
+            let xhr = new XMLHttpRequest();
+
+            xhr.upload.onprogress = function (event) {
+
+                if (event.lengthComputable) {
+
+                    let percent = (event.loaded / event.total) * 100;
+
+                    let loadedMB = (event.loaded / (1024 * 1024)).toFixed(2);
+                    let totalMB = (event.total / (1024 * 1024)).toFixed(2);
+
+                    document.getElementById("progressBar").value = percent;
+
+                    document.getElementById("percentText").innerText =
+                        Math.round(percent) + "%";
+
+                    document.getElementById("sizeText").innerText =
+                        "Uploaded: " + loadedMB + " MB / " + totalMB + " MB";
+                }
+            };
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    document.getElementById("status").innerText =
+                        "Upload complete!";
+                } else {
+                    document.getElementById("status").innerText =
+                        "Upload failed!";
+                }
+            };
+
+            xhr.open("POST", "/upload", true);
+            xhr.send(formData);
+        }
+    </script>
+
+</body>
+</html>
